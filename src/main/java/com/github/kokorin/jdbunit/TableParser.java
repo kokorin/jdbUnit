@@ -4,77 +4,71 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class TableParser {
-    public List<Table> parseTables(InputStream inputStream) {
+    public static List<Table> parseTables(InputStream inputStream) {
         Reader reader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
-        BufferedReader lineReader = new BufferedReader(reader);
+        Iterator<String> lines = lineIterator(reader);
 
         List<Table> result = new ArrayList<>();
-        try {
-
-            String prevLine = null;
-
-            String tableName = null;
-            String header = null;
-            List<String> rows = null;
-
-            while (true) {
-                String line = lineReader.readLine();
-                boolean hasMoreLines = line != null;
-                boolean tableEnded = !hasMoreLines;
-
-                String trimmed = trim(line);
-
-                if (containsOnly(trimmed, "=")) {
-                    tableName = prevLine;
-                    header = null;
-                    rows = null;
-                } else if (trimmed.contains("|")) {
-                    if (rows != null) {
-                        rows.add(trimmed);
-                    }
-                } else if (containsOnly(trimmed, "-")) {
-                    if (tableName != null) {
-                        header = prevLine;
-                        rows = new ArrayList<>();
-                    }
-                } else {
-                    tableEnded = true;
-                }
-
-
-                if ( tableEnded && tableName != null && header != null && rows != null ) {
-                    Table table = createTable(tableName, header, rows);
-                    result.add(table);
-                    tableName = null;
-                    header = null;
-                    rows = null;
-                }
-
-                if (!hasMoreLines) {
-                    break;
-                }
-                prevLine = line;
+        while (true) {
+            Table table = parseTable(lines);
+            if (table == null) {
+                break;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            result.add(table);
         }
 
         return result;
     }
 
-    private static Table createTable(String name, String header, List<String> lines) {
-        List<Column> columns = new ArrayList<>();
-        List<String> columnDecl = parseCells(header);
-        for (String decl : columnDecl) {
-            columns.add(parseColumn(decl));
+    static Table parseTable(Iterator<String> lines) {
+        String name = null;
+        List<Column> columns = null;
+        List<Row> rows;
+
+        //Rewinding empty lines until we will find table's name
+        while (lines.hasNext()) {
+            String line = lines.next().trim();
+            if (line.isEmpty()) {
+                continue;
+            }
+            name = line;
+            break;
         }
 
-        List<Row> rows = new ArrayList<>();
-        for (String line : lines) {
-            rows.add(parseRow(line));
+        if (name != null && !lines.hasNext()) {
+            throw new IllegalArgumentException();
+        }
+
+        if (name == null) {
+            return null;
+        }
+
+        String headerSeparator = lines.next();
+        if (!isHeaderSeparator(headerSeparator)) {
+            throw new IllegalArgumentException();
+        }
+
+        String header = lines.next();
+        columns = parseHeader(header);
+
+        String contentSeparator = lines.next();
+        if (!isContentSeparator(contentSeparator, columns.size())) {
+            throw new IllegalArgumentException();
+        }
+
+        rows = new ArrayList<>();
+        while (lines.hasNext()) {
+            String line = lines.next();
+            if (line.trim().isEmpty()) {
+                break;
+            }
+            Row row = parseRow(line);
+            rows.add(row);
         }
 
         return new Table(name, columns, rows);
@@ -99,12 +93,27 @@ public class TableParser {
         return Arrays.asList(array);
     }
 
+    static List<Column> parseHeader(String value) {
+        if (value == null || value.isEmpty()) {
+            throw new IllegalArgumentException("Header must be non empty");
+        }
+
+        List<Column> result = new ArrayList<>();
+        List<String> cells = parseCells(value);
+        for (String cell : cells) {
+            Column column = parseColumn(cell);
+            result.add(column);
+        }
+
+        return result;
+    }
+
     static Column parseColumn(String value) {
         if (value == null || value.isEmpty()) {
             throw new IllegalArgumentException("Column declaration must be non empty");
         }
 
-        String[] splits = value.split(":");
+        String[] splits = value.trim().split(":");
         if (splits.length > 2) {
             throw new IllegalArgumentException("Either columnName or columnName:Type expected");
         }
@@ -122,16 +131,64 @@ public class TableParser {
         return new Column(name, type);
     }
 
-    private static Row parseRow(String value) {
-        List<String> values = parseCells(value);
+    static List<Row> parseContent(List<String> content) {
+        List<Row> result = new ArrayList<>();
+        if (content != null) {
+            for (String line : content) {
+                Row row = parseRow(line);
+                result.add(row);
+            }
+        }
+
+        return result;
+    }
+
+    static Row parseRow(String line) {
+        List<String> values = new ArrayList<>();
+        List<String> cells = parseCells(line);
+        for (String cell : cells) {
+            values.add(cell.trim());
+        }
+
         return new Row(values);
     }
 
-    private static String trim(String value) {
-        return value;
+    static boolean isHeaderSeparator(String line) {
+        if (line == null || line.isEmpty()) {
+            return false;
+        }
+
+        return line.matches("^\\s*=+\\s*$");
     }
 
-    private static boolean containsOnly(String value, String c) {
-        return value.startsWith(c) && value.endsWith(c);
+    static boolean isContentSeparator(String line, int columns) {
+        List<String> cells = parseCells(line);
+        if (cells.size() != columns) {
+            return false;
+        }
+
+        for (String cell : cells) {
+            boolean match = cell.trim().matches(":?---+:?");
+            if (!match) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    static Iterator<String> lineIterator(Reader reader) {
+        BufferedReader buffered = new BufferedReader(reader);
+
+        List<String> lines = new ArrayList<>();
+        try {
+            String line = buffered.readLine();
+            while (line != null) {
+                lines.add(line);
+                line = buffered.readLine();
+            }
+        } catch (IOException e){}
+
+        return lines.iterator();
     }
 }
