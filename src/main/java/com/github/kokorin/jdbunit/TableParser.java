@@ -113,22 +113,33 @@ public class TableParser {
             throw new IllegalArgumentException("Column declaration must be non empty");
         }
 
-        String[] splits = value.trim().split(":");
+        String[] splits = value.split(":");
         if (splits.length > 2) {
             throw new IllegalArgumentException("Either columnName or columnName:Type expected");
         }
 
-        String name;
-        String type;
-        if (splits.length == 2) {
-            name = splits[0];
-            type = splits[1];
-        } else {
-            name = splits[0];
-            type = "String";
+        String name = splits[0].trim();
+        Column.Type type = Column.Type.STRING;
+        if (splits.length > 1) {
+            type = getColumnType(splits[1].trim());
         }
 
         return new Column(name, type);
+    }
+
+    static Column.Type getColumnType(String value) {
+        for (Column.Type type : Column.Type.values()) {
+            if (type.name().equals(value)) {
+                return type;
+            }
+            for (String alias : type.getAliases()) {
+                if (alias.equals(value)) {
+                    return type;
+                }
+            }
+        }
+
+        throw new IllegalArgumentException("Nor column type neither alias: " + value);
     }
 
     static List<Row> parseContent(List<String> content) {
@@ -177,6 +188,7 @@ public class TableParser {
         return true;
     }
 
+    //TODO need better implementation
     static Iterator<String> lineIterator(Reader reader) {
         BufferedReader buffered = new BufferedReader(reader);
 

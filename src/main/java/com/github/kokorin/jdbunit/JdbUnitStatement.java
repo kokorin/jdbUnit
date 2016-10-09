@@ -6,6 +6,7 @@ import javax.sql.DataSource;
 import java.io.InputStream;
 
 public class JdbUnitStatement extends Statement {
+    //jUnit Statement
     private final Statement base;
     private final InputStream initialTalesLocation;
     private final InputStream expectedTalesLocation;

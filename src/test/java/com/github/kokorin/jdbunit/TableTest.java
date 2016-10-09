@@ -1,11 +1,7 @@
 package com.github.kokorin.jdbunit;
 
-import javafx.scene.control.Tab;
-import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,8 +12,8 @@ import static org.junit.Assert.assertNotNull;
 
 public class TableTest {
     private static List<Column> twoColumns = asList(
-            new Column("name1", "type1"),
-            new Column("name2", "type2")
+            new Column("name1", Column.Type.INTEGER),
+            new Column("name2", Column.Type.TIMESTAMP)
     );;
     private static List<Row> noRows = emptyList();
 

@@ -1,14 +1,13 @@
 package com.github.kokorin.jdbunit;
 
+import com.github.kokorin.jdbunit.Column.Type;
 import org.junit.Test;
 
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.unitils.reflectionassert.ReflectionAssert.assertReflectionEquals;
 
 public class TableParserTest {
@@ -38,19 +37,28 @@ public class TableParserTest {
     }
 
     @Test
+    public void defaultColumnType() throws Exception {
+        assertReflectionEquals(
+                new Column("any", Type.STRING),
+                TableParser.parseColumn("any")
+        );
+
+    }
+
+    @Test
     public void parseHeader() throws Exception {
         assertReflectionEquals(
-                asList(new Column("column1", "String"), new Column("column2", "type2")),
-                TableParser.parseHeader(" column1 | column2:type2 ")
+                asList(new Column("column1", Type.STRING), new Column("column2", Type.LONG)),
+                TableParser.parseHeader(" column1 | column2:long ")
         );
     }
 
     @Test
     public void parseColumn() throws Exception {
-        assertReflectionEquals(new Column("name", "type"), TableParser.parseColumn("name:type"));
-        assertReflectionEquals(new Column("name", "String"), TableParser.parseColumn("name"));
-        assertReflectionEquals(new Column("name", "type"), TableParser.parseColumn(" name:type "));
-        assertReflectionEquals(new Column("name", "String"), TableParser.parseColumn(" name "));
+        assertReflectionEquals(new Column("name", Type.INTEGER), TableParser.parseColumn("name:int"));
+        assertReflectionEquals(new Column("name", Type.STRING), TableParser.parseColumn("name:STRING"));
+        assertReflectionEquals(new Column("name", Type.LONG), TableParser.parseColumn(" name:Long "));
+        assertReflectionEquals(new Column("name", Type.DATE), TableParser.parseColumn(" name : Date "));
     }
 
     @Test
@@ -89,13 +97,16 @@ public class TableParserTest {
 
     @Test
     public void parseTable() throws Exception {
-        List<Column> expectedColumns = asList(new Column("col1", "type1"), new Column("col2", "type2"));
+        List<Column> expectedColumns = asList(
+                new Column("col1", Type.INTEGER),
+                new Column("col2", Type.STRING)
+        );
         List<Row> expectedRows = asList(new Row(asList("val11", "val12")), new Row(asList("val21", "val22")));
         List<String> lines = asList(
                 "                          ",
                 " name                     ",
                 "==========================",
-                "| col1:type1 | col2:type2 |",
+                "| col1:int | col2:string |",
                 "|------------|------------|",
                 "|    val11   |    val12   |",
                 "|    val21   |    val22   |"
