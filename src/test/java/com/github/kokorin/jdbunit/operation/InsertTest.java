@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,21 +42,21 @@ public class InsertTest {
                                 new Column("birth", Column.Type.DATE)
                         ),
                         asList(
-                                new Row(asList("1", "first user", "2016-10-09")),
-                                new Row(asList("3000000000", "secondUser", "1986-09-24")),
-                                new Row(asList("42", "last", "2013-11-13"))
+                                new Row(Arrays.<Object>asList(1L, "first user", Date.valueOf("2016-10-09"))),
+                                new Row(Arrays.<Object>asList(3000000000L, "secondUser", Date.valueOf("1986-09-24"))),
+                                new Row(Arrays.<Object>asList(42L, "last", Date.valueOf("2013-11-13")))
                         )
                 ),
                 new Table(
                         "Second",
                         asList(
-                                new Column("id", Column.Type.LONG),
+                                new Column("id", Column.Type.INTEGER),
                                 new Column("passed", Column.Type.BOOLEAN)
                         ),
                         asList(
-                                new Row(asList("1", "true")),
-                                new Row(asList("100", "false")),
-                                new Row(asList("123123", "other"))
+                                new Row(Arrays.<Object>asList(1, true)),
+                                new Row(Arrays.<Object>asList(100, false)),
+                                new Row(Arrays.<Object>asList(123123, false))
                         )
                 )
         );
@@ -92,15 +93,15 @@ public class InsertTest {
         inOrder.verify(first).addBatch();
         inOrder.verify(first).executeBatch();
 
-        inOrder.verify(second).setObject(1, 1L, Types.BIGINT);
+        inOrder.verify(second).setObject(1, 1, Types.INTEGER);
         inOrder.verify(second).setObject(2, true, Types.BIT);
         inOrder.verify(second).addBatch();
 
-        inOrder.verify(second).setObject(1, 100L, Types.BIGINT);
+        inOrder.verify(second).setObject(1, 100, Types.INTEGER);
         inOrder.verify(second).setObject(2, false, Types.BIT);
         inOrder.verify(second).addBatch();
 
-        inOrder.verify(second).setObject(1, 123123L, Types.BIGINT);
+        inOrder.verify(second).setObject(1, 123123, Types.INTEGER);
         inOrder.verify(second).setObject(2, false, Types.BIT);
         inOrder.verify(second).addBatch();
         inOrder.verify(second).executeBatch();

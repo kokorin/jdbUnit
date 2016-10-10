@@ -25,72 +25,18 @@ public class Column {
     }
 
     public enum Type {
-        BOOLEAN(Types.BIT, "bit", "Bit", "boolean", "Boolean") {
-            @Override
-            protected Object parseNonNull(String value) {
-                return Boolean.valueOf(value);
-            }
-        },
-        INTEGER(Types.INTEGER, "int", "Int", "integer", "Integer") {
-            @Override
-            protected Object parseNonNull(String value) {
-                return Integer.valueOf(value);
-            }
-        },
-        LONG(Types.BIGINT, "long", "Long") {
-            @Override
-            protected Object parseNonNull(String value) {
-                return Long.valueOf(value);
-            }
-        },
-        FLOAT(Types.FLOAT, "float", "Float", "real", "Real") {
-            @Override
-            protected Object parseNonNull(String value) {
-                return Float.valueOf(value);
-            }
-        },
-        DOUBLE(Types.DOUBLE, "Double", "double") {
-            @Override
-            protected Object parseNonNull(String value) {
-                return Double.valueOf(value);
-            }
-        },
-        DATE(Types.DATE, "date", "Date") {
-            @Override
-            protected Object parseNonNull(String value) {
-                return Date.valueOf(value);
-            }
-        },
-        TIME(Types.TIME, "time", "Time") {
-            @Override
-            protected Object parseNonNull(String value) {
-                return Time.valueOf(value);
-            }
-        },
-        TIMESTAMP(Types.TIMESTAMP, "timestamp", "Timestamp") {
-            @Override
-            protected Object parseNonNull(String value) {
-                return Timestamp.valueOf(value);
-            }
-        },
-        STRING(Types.VARCHAR, "string", "String") {
-            @Override
-            protected Object parseNonNull(String value) {
-                return value;
-            }
-        };
+        BOOLEAN(Types.BIT, "bit", "Bit", "boolean", "Boolean"),
+        INTEGER(Types.INTEGER, "int", "Int", "integer", "Integer"),
+        LONG(Types.BIGINT, "long", "Long"),
+        FLOAT(Types.FLOAT, "float", "Float", "real", "Real"),
+        DOUBLE(Types.DOUBLE, "Double", "double"),
+        DATE(Types.DATE, "date", "Date"),
+        TIME(Types.TIME, "time", "Time"),
+        TIMESTAMP(Types.TIMESTAMP, "timestamp", "Timestamp"),
+        STRING(Types.VARCHAR, "string", "String");
 
         private final int sqlType;
         private final List<String> aliases;
-
-        protected abstract Object parseNonNull(String value);
-
-        public Object parse(String value) {
-            if (value == null || value.isEmpty()) {
-                return null;
-            }
-            return parseNonNull(value);
-        }
 
         Type(int sqlType, String... aliases) {
             this.sqlType = sqlType;

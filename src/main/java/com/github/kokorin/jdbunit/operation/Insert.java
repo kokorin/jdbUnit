@@ -25,7 +25,7 @@ public class Insert implements Operation {
             }
 
             connection.commit();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -44,11 +44,11 @@ public class Insert implements Operation {
     }
 
     void setParameters(PreparedStatement statement, List<Column> columns, Row row) throws SQLException {
-        List<String> values = row.getValues();
+        List<Object> values = row.getValues();
         for (int i = 0; i < values.size(); ++i) {
-            String value = values.get(i);
+            Object value = values.get(i);
             Column.Type type = columns.get(i).getType();
-            statement.setObject(i + 1, type.parse(value), type.getSqlType());
+            statement.setObject(i + 1, value, type.getSqlType());
         }
     }
 

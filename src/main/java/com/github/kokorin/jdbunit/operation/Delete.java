@@ -4,6 +4,7 @@ import com.github.kokorin.jdbunit.Table;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.ListIterator;
@@ -30,7 +31,7 @@ public class Delete implements Operation {
             }
 
             connection.commit();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }

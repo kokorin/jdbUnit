@@ -44,7 +44,7 @@ public class TableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void rowsHaveValueForEachColumn() throws Exception {
-        Row oneValueRow = new Row(singletonList("zxc"));
+        Row oneValueRow = new Row(Collections.<Object>singletonList("zxc"));
         new Table("any", twoColumns, singletonList(oneValueRow));
     }
 

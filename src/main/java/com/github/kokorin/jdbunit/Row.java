@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class Row {
-    private final List<String> values;
+    private final List<Object> values;
 
-    public Row(List<String> values) {
+    public Row(List<Object> values) {
         Objects.requireNonNull(values);
         if (values.isEmpty()) {
             throw new IllegalArgumentException("At least one value in a row is required");
@@ -18,7 +18,7 @@ public class Row {
         this.values = values;
     }
 
-    public List<String> getValues() {
+    public List<Object> getValues() {
         return values;
     }
 }

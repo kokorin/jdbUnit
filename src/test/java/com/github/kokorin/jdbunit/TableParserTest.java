@@ -3,7 +3,9 @@ package com.github.kokorin.jdbunit;
 import com.github.kokorin.jdbunit.Column.Type;
 import org.junit.Test;
 
-import java.util.List;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -62,6 +64,56 @@ public class TableParserTest {
     }
 
     @Test
+    public void parseColumnType() throws Exception {
+        assertEquals(Type.BOOLEAN, TableParser.parseColumnType("Boolean"));
+        assertEquals(Type.INTEGER, TableParser.parseColumnType("int"));
+        assertEquals(Type.STRING, TableParser.parseColumnType("string"));
+        assertEquals(Type.LONG, TableParser.parseColumnType("Long"));
+    }
+
+    @Test
+    public void parseRow() throws Exception {
+        List<Column> columns = asList(
+                new Column("c1", Type.INTEGER),
+                new Column("c2", Type.STRING),
+                new Column("c3", Type.LONG),
+                new Column("c4", Type.BOOLEAN)
+        );
+
+        Row expected = new Row(Arrays.<Object>asList(234, "some", 256L, false));
+        assertReflectionEquals(expected, TableParser.parseRow("234|some|256|no", columns));
+    }
+
+    @Test
+    public void parseValue() throws Exception {
+        Object[][] data = {
+                {"text", Type.STRING, "text"},
+                {"123", Type.INTEGER, 123},
+                {"", Type.INTEGER, null},
+                {"321", Type.LONG, 321L},
+                {"true", Type.BOOLEAN, true},
+                {"", Type.BOOLEAN, null},
+                {"3.1415", Type.FLOAT, 3.1415f},
+                {"3.1415926", Type.DOUBLE, 3.1415926},
+                {"1986-12-24", Type.DATE, new Date(86, 11, 24)},
+                {"15:38:07", Type.TIME, new Time(15, 38, 7)},
+                {"1986-12-24 15:38:07.042", Type.TIMESTAMP, new Timestamp(86, 11, 24, 15, 38, 7, 42_000_000)}
+        };
+
+        Set<Type> notCheckedTypes = new HashSet<>(asList(Type.values()));
+        for (Object[] test : data) {
+            String text = (String) test[0];
+            Type type = (Type) test[1];
+            Object expected = test[2];
+
+            assertEquals(expected, TableParser.parseValue(text, type));
+            notCheckedTypes.remove(type);
+        }
+
+        assertEquals("The next types hasn't been checked: " + notCheckedTypes, 0, notCheckedTypes.size());
+    }
+
+    @Test
     public void isHeaderSeparator() throws Exception {
         assertTrue(TableParser.isHeaderSeparator("="));
         assertTrue(TableParser.isHeaderSeparator("======"));
@@ -71,7 +123,6 @@ public class TableParserTest {
 
         assertFalse(TableParser.isHeaderSeparator("=-="));
         assertFalse(TableParser.isHeaderSeparator("  =-=  "));
-
     }
 
     @Test
@@ -101,15 +152,15 @@ public class TableParserTest {
                 new Column("col1", Type.INTEGER),
                 new Column("col2", Type.STRING)
         );
-        List<Row> expectedRows = asList(new Row(asList("val11", "val12")), new Row(asList("val21", "val22")));
+        List<Row> expectedRows = asList(new Row(Arrays.<Object>asList(123, "val12")), new Row(Arrays.<Object>asList(321, "val22")));
         List<String> lines = asList(
                 "                          ",
                 " name                     ",
                 "==========================",
                 "| col1:int | col2:string |",
                 "|------------|------------|",
-                "|    val11   |    val12   |",
-                "|    val21   |    val22   |"
+                "|     123    |    val12   |",
+                "|     321    |    val22   |"
         );
 
         assertReflectionEquals(

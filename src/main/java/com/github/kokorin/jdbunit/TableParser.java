@@ -2,10 +2,9 @@ package com.github.kokorin.jdbunit;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.sql.*;
+import java.sql.Date;
+import java.util.*;
 
 public class TableParser {
     public static List<Table> parseTables(InputStream inputStream) {
@@ -67,7 +66,7 @@ public class TableParser {
             if (line.trim().isEmpty()) {
                 break;
             }
-            Row row = parseRow(line);
+            Row row = parseRow(line, columns);
             rows.add(row);
         }
 
@@ -121,13 +120,13 @@ public class TableParser {
         String name = splits[0].trim();
         Column.Type type = Column.Type.STRING;
         if (splits.length > 1) {
-            type = getColumnType(splits[1].trim());
+            type = parseColumnType(splits[1].trim());
         }
 
         return new Column(name, type);
     }
 
-    static Column.Type getColumnType(String value) {
+    static Column.Type parseColumnType(String value) {
         for (Column.Type type : Column.Type.values()) {
             if (type.name().equals(value)) {
                 return type;
@@ -142,33 +141,63 @@ public class TableParser {
         throw new IllegalArgumentException("Nor column type neither alias: " + value);
     }
 
-    static List<Row> parseContent(List<String> content) {
-        List<Row> result = new ArrayList<>();
-        if (content != null) {
-            for (String line : content) {
-                Row row = parseRow(line);
-                result.add(row);
-            }
+    static Row parseRow(String line, List<Column> columns) {
+        List<Object> values = new ArrayList<>();
+
+        List<String> cells = parseCells(line);
+        if (cells.size() != columns.size()) {
+            throw new IllegalArgumentException("Expected " + columns.size() + " cells in a row, but got " + cells.size());
         }
 
-        return result;
-    }
+        for (int i = 0; i < columns.size(); ++i) {
+            String cell = cells.get(i);
+            Column.Type type = columns.get(i).getType();
 
-    static Row parseRow(String line) {
-        List<String> values = new ArrayList<>();
-        List<String> cells = parseCells(line);
-        for (String cell : cells) {
-            values.add(cell.trim());
+            Object value = parseValue(cell, type);
+            values.add(value);
         }
 
         return new Row(values);
     }
 
-    static boolean isHeaderSeparator(String line) {
-        if (line == null || line.isEmpty()) {
-            return false;
+    static Object parseValue(String text, Column.Type type) {
+        Objects.requireNonNull(text);
+        text = text.trim();
+
+        if (text.isEmpty()) {
+            return null;
         }
 
+        if (type == Column.Type.INTEGER) {
+            return Integer.valueOf(text);
+        }
+        if (type == Column.Type.LONG) {
+            return Long.valueOf(text);
+        }
+        if (type == Column.Type.BOOLEAN) {
+            return Boolean.valueOf(text);
+        }
+        if (type == Column.Type.FLOAT) {
+            return Float.valueOf(text);
+        }
+        if (type == Column.Type.DOUBLE) {
+            return Double.valueOf(text);
+        }
+        if (type == Column.Type.DATE) {
+            return Date.valueOf(text);
+        }
+        if (type == Column.Type.TIME) {
+            return Time.valueOf(text);
+        }
+        if (type == Column.Type.TIMESTAMP) {
+            return Timestamp.valueOf(text);
+        }
+
+        return text;
+    }
+
+    static boolean isHeaderSeparator(String line) {
+        Objects.requireNonNull(line);
         return line.matches("^\\s*=+\\s*$");
     }
 

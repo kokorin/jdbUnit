@@ -12,6 +12,6 @@ public class RowTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void nonEmptyValues() throws Exception {
-        new Row(Collections.<String>emptyList());
+        new Row(Collections.<Object>emptyList());
     }
 }
