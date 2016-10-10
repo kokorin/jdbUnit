@@ -7,8 +7,8 @@
     <packaging>jar</packaging>
 
     <name>jdbUnit</name>
-    <!--<description>A demo for deployment to the Central Repository via OSSRH</description>
-    <url>http://github.com/simpligility/ossrh-demo</url>-->
+    <description>A simple to use library for database integration testing.</description>
+    <url>https://github.com/kokorin/jdbUnit</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -19,17 +19,16 @@
         <developer>
             <name>Denis Kokorin</name>
             <email>kokorin86@gmail.com</email>
-            <!--<organization>simpligility technologies inc.</organization>
-            <organizationUrl>http://www.simpligility.com</organizationUrl>-->
+            <url>https://github.com/kokorin</url>
         </developer>
     </developers>
-    <!--<scm>
-        <connection>scm:git:git://github.com/simpligility/ossrh-demo.git</connection>
-        <developerConnection>scm:git:ssh://github.com:simpligility/ossrh-demo.git</developerConnection>
-        <url>http://github.com/simpligility/ossrh-demo/tree/master</url>
-    </scm>-->
+    <scm>
+        <connection>scm:git:git://github.com/kokorin/jdbUnit.git</connection>
+        <developerConnection>scm:git:ssh://github.com/kokorin/jdbUnit.git</developerConnection>
+        <url>http://github.com/kokorin/jdbUnit/tree/master</url>
+    </scm>
 
-    <!--<distributionManagement>
+    <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
@@ -38,7 +37,7 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
-    </distributionManagement>-->
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
