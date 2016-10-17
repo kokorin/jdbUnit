@@ -9,6 +9,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
 import javax.sql.DataSource;
+import java.io.InputStream;
 
 public class JdbUnitRule implements MethodRule {
     private final DataSource dataSource;
@@ -28,41 +29,46 @@ public class JdbUnitRule implements MethodRule {
             return base;
         }
 
-
-        DataSet methodDataSet = method.getAnnotation(DataSet.class);
+        DataSet methodDataSetAnnotation = method.getAnnotation(DataSet.class);
         Class<?> clazz = target.getClass();
-        DataSet classDataSet = clazz.getAnnotation(DataSet.class);
-        if (methodDataSet == null && classDataSet == null) {
+        DataSet classDataSetAnnotation = clazz.getAnnotation(DataSet.class);
+        if (methodDataSetAnnotation == null && classDataSetAnnotation == null) {
             return base;
         }
 
-        final String initialTablesLocation;
-        if (methodDataSet != null) {
-            String location = methodDataSet.value();
+        String dataSetLocation;
+        if (methodDataSetAnnotation != null) {
+            String location = methodDataSetAnnotation.value();
             if ("".equals(location)) {
                 location = clazz.getSimpleName() + "." + method.getName() + ".md";
             }
-            initialTablesLocation = location;
+            dataSetLocation = location;
         } else /*if (classDataSet != null)*/ {
-            String location = classDataSet.value();
+            String location = classDataSetAnnotation.value();
             if ("".equals(location)) {
                 location = clazz.getSimpleName() + ".md";
             }
-            initialTablesLocation = location;
+            dataSetLocation = location;
         }
 
-        ExpectedDataSet expectedDataSet = method.getAnnotation(ExpectedDataSet.class);
-        final String expectedTablesLocation;
-        if (expectedDataSet != null) {
-            String location = expectedDataSet.value();
+        ExpectedDataSet expectedDataSetAnnotation = method.getAnnotation(ExpectedDataSet.class);
+        String expectedDataSetLocation;
+        if (expectedDataSetAnnotation != null) {
+            String location = expectedDataSetAnnotation.value();
             if ("".equals(location)) {
                 location = clazz.getSimpleName() + "." + method.getName() + ".result.md";
             }
-            expectedTablesLocation = location;
+            expectedDataSetLocation = location;
         } else {
-            expectedTablesLocation = null;
+            expectedDataSetLocation = null;
         }
 
-        return new JdbUnitStatement(base, null, null, dataSource);
+        InputStream dataSet = target.getClass().getResourceAsStream(dataSetLocation);
+        InputStream expectedDataSet = null;
+        if (expectedDataSetLocation != null) {
+            expectedDataSet = target.getClass().getResourceAsStream(expectedDataSetLocation);
+        }
+
+        return new JdbUnitStatement(base, dataSet, expectedDataSet, dataSource);
     }
 }
