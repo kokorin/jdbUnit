@@ -1,8 +1,5 @@
 package com.github.kokorin.jdbunit;
 
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +46,16 @@ public class Column {
 
         public List<String> getAliases() {
             return aliases;
+        }
+
+        public static Type fromSqlType(int sqlType) {
+            for (Type type : values()) {
+                if (type.getSqlType() == sqlType) {
+                    return type;
+                }
+            }
+
+            throw new IllegalArgumentException("Type not found for " + sqlType);
         }
     }
 

@@ -88,6 +88,7 @@ public class TableParserTest {
     public void parseValue() throws Exception {
         Object[][] data = {
                 {"text", Type.STRING, "text"},
+                {"", Type.STRING, null},
                 {"123", Type.INTEGER, 123},
                 {"", Type.INTEGER, null},
                 {"321", Type.LONG, 321L},

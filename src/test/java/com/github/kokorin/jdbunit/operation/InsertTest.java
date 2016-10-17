@@ -33,81 +33,80 @@ public class InsertTest {
 
     @Test
     public void execute() throws Exception {
-        List<Table> tables = asList(
-                new Table(
-                        "First",
-                        asList(
-                                new Column("id", Column.Type.LONG),
-                                new Column("username", Column.Type.STRING),
-                                new Column("birth", Column.Type.DATE)
-                        ),
-                        asList(
-                                new Row(Arrays.<Object>asList(1L, "first user", Date.valueOf("2016-10-09"))),
-                                new Row(Arrays.<Object>asList(3000000000L, "secondUser", Date.valueOf("1986-09-24"))),
-                                new Row(Arrays.<Object>asList(42L, "last", Date.valueOf("2013-11-13")))
-                        )
-                ),
-                new Table(
-                        "Second",
-                        asList(
-                                new Column("id", Column.Type.INTEGER),
-                                new Column("passed", Column.Type.BOOLEAN)
-                        ),
-                        asList(
-                                new Row(Arrays.<Object>asList(1, true)),
-                                new Row(Arrays.<Object>asList(100, false)),
-                                new Row(Arrays.<Object>asList(123123, false))
-                        )
-                )
-        );
+        Table table1 = mock(Table.class);
+        Table table2 = mock(Table.class);
+        List<Table> tables = asList(table1, table2);
 
+        Insert insert = spy(new Insert());
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
-        PreparedStatement first = mock(PreparedStatement.class);
-        PreparedStatement second = mock(PreparedStatement.class);
 
+        doNothing().when(insert).insertTable(any(Table.class), any(Connection.class));
         when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.prepareStatement("INSERT INTO First (id, username, birth) VALUES (?, ?, ?)")).thenReturn(first);
-        when(connection.prepareStatement("INSERT INTO Second (id, passed) VALUES (?, ?)")).thenReturn(second);
 
         //Actual test call
-        new Insert().execute(tables, dataSource);
+        insert.execute(tables, dataSource);
 
-        InOrder inOrder = inOrder(connection, first, second);
-
+        InOrder inOrder = inOrder(insert, dataSource, connection);
+        inOrder.verify(dataSource).getConnection();
         inOrder.verify(connection).setAutoCommit(false);
-
-        inOrder.verify(first).setObject(1, 1L, Types.BIGINT);
-        inOrder.verify(first).setObject(2, "first user", Types.VARCHAR);
-        inOrder.verify(first).setObject(3, new Date(116, 9, 9), Types.DATE);
-        inOrder.verify(first).addBatch();
-
-        inOrder.verify(first).setObject(1, 3_000_000_000L, Types.BIGINT);
-        inOrder.verify(first).setObject(2, "secondUser", Types.VARCHAR);
-        inOrder.verify(first).setObject(3, new Date(86, 8, 24), Types.DATE);
-        inOrder.verify(first).addBatch();
-
-        inOrder.verify(first).setObject(1, 42L, Types.BIGINT);
-        inOrder.verify(first).setObject(2, "last", Types.VARCHAR);
-        inOrder.verify(first).setObject(3, new Date(113, 10, 13), Types.DATE);
-        inOrder.verify(first).addBatch();
-        inOrder.verify(first).executeBatch();
-
-        inOrder.verify(second).setObject(1, 1, Types.INTEGER);
-        inOrder.verify(second).setObject(2, true, Types.BIT);
-        inOrder.verify(second).addBatch();
-
-        inOrder.verify(second).setObject(1, 100, Types.INTEGER);
-        inOrder.verify(second).setObject(2, false, Types.BIT);
-        inOrder.verify(second).addBatch();
-
-        inOrder.verify(second).setObject(1, 123123, Types.INTEGER);
-        inOrder.verify(second).setObject(2, false, Types.BIT);
-        inOrder.verify(second).addBatch();
-        inOrder.verify(second).executeBatch();
-
+        inOrder.verify(insert).insertTable(table1, connection);
+        inOrder.verify(insert).insertTable(table2, connection);
         inOrder.verify(connection).commit();
         inOrder.verify(connection).close();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void insertTable() throws Exception {
+        List<Column> columns = asList(
+                new Column("id", Column.Type.LONG),
+                new Column("name", Column.Type.STRING)
+        );
+        Row row1 = new Row(Arrays.<Object>asList(123L, "Test"));
+        Row row2 = new Row(Arrays.<Object>asList(321L, "Mock"));
+        List<Row> rows = asList(row1, row2);
+        Table table = new Table("TableName", columns, rows);
+
+        Insert insert = spy(new Insert());
+        Connection connection = mock(Connection.class);
+        PreparedStatement statement = mock(PreparedStatement.class);
+
+        doNothing().when(insert).setParameters(any(PreparedStatement.class), anyList(), any(Row.class));
+        when(connection.prepareStatement(anyString())).thenReturn(statement);
+
+        insert.insertTable(table, connection);
+
+        InOrder inOrder = inOrder(insert, connection, statement);
+        inOrder.verify(insert).insertTable(table, connection);
+        inOrder.verify(connection).prepareStatement(anyString());
+        inOrder.verify(insert).setParameters(statement, columns, row1);
+        inOrder.verify(statement).addBatch();
+        inOrder.verify(insert).setParameters(statement, columns, row2);
+        inOrder.verify(statement).addBatch();
+        inOrder.verify(statement).executeBatch();
+        inOrder.verify(statement).close();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void setParameters() throws Exception {
+        Insert insert = new Insert();
+        PreparedStatement statement = mock(PreparedStatement.class);
+
+        List<Column> columns = asList(
+                new Column("id", Column.Type.LONG),
+                new Column("name", Column.Type.STRING),
+                new Column("password", Column.Type.STRING)
+        );
+        Row row = new Row(Arrays.<Object>asList(123L, "Name", "Password"));
+
+        insert.setParameters(statement, columns, row);
+
+        InOrder inOrder = inOrder(statement);
+        inOrder.verify(statement).setObject(1, 123L, Types.BIGINT);
+        inOrder.verify(statement).setObject(2, "Name", Types.VARCHAR);
+        inOrder.verify(statement).setObject(3, "Password", Types.VARCHAR);
         inOrder.verifyNoMoreInteractions();
     }
 
