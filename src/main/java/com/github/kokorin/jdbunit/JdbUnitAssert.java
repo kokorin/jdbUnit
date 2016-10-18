@@ -1,6 +1,8 @@
 package com.github.kokorin.jdbunit;
 
-import org.junit.Assert;
+import com.github.kokorin.jdbunit.table.Column;
+import com.github.kokorin.jdbunit.table.Row;
+import com.github.kokorin.jdbunit.table.Table;
 
 import java.util.*;
 

@@ -4,6 +4,7 @@ import com.github.kokorin.jdbunit.operation.Delete;
 import com.github.kokorin.jdbunit.operation.Insert;
 import com.github.kokorin.jdbunit.operation.Operation;
 import com.github.kokorin.jdbunit.operation.Verify;
+import com.github.kokorin.jdbunit.table.Table;
 import org.junit.runners.model.Statement;
 
 import javax.sql.DataSource;
@@ -29,9 +30,8 @@ public class JdbUnitStatement extends Statement {
     public void evaluate() throws Throwable {
         deleteAndInsert();
         base.evaluate();
-        checkExpected();
+        verifyExpected();
     }
-
 
     private void deleteAndInsert() throws Exception {
         if (dataSet == null) {
@@ -45,7 +45,7 @@ public class JdbUnitStatement extends Statement {
         }
     }
 
-    private void checkExpected() throws Exception {
+    private void verifyExpected() throws Exception {
         if (expectedDataSet == null) {
             return;
         }

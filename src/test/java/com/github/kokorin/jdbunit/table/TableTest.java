@@ -1,5 +1,8 @@
-package com.github.kokorin.jdbunit;
+package com.github.kokorin.jdbunit.table;
 
+import com.github.kokorin.jdbunit.table.Column;
+import com.github.kokorin.jdbunit.table.Row;
+import com.github.kokorin.jdbunit.table.Table;
 import org.junit.Test;
 
 import java.util.Collections;

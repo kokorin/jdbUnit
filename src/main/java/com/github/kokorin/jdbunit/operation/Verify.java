@@ -1,8 +1,8 @@
 package com.github.kokorin.jdbunit.operation;
 
-import com.github.kokorin.jdbunit.Column;
-import com.github.kokorin.jdbunit.Row;
-import com.github.kokorin.jdbunit.Table;
+import com.github.kokorin.jdbunit.table.Column;
+import com.github.kokorin.jdbunit.table.Row;
+import com.github.kokorin.jdbunit.table.Table;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -31,8 +31,8 @@ public class Verify implements Operation {
             String query = createSelectQuery(expected);
 
             try (ResultSet resultSet = statement.executeQuery(query)) {
-                ResultSetMetaData meta = resultSet.getMetaData();
-                List<Column> columns = readColumns(meta);
+                //ResultSetMetaData meta = resultSet.getMetaData();
+                List<Column> columns = expected.getColumns();
                 List<Row> rows = readRows(resultSet, columns);
 
                 return new Table(expected.getName(), columns, rows);
@@ -40,11 +40,11 @@ public class Verify implements Operation {
         }
     }
 
-    List<Column> readColumns(ResultSetMetaData meta) throws SQLException {
+    /*List<Column> readColumns(ResultSetMetaData meta) throws SQLException {
         int count = meta.getColumnCount();
         List<Column> result = new ArrayList<>(count);
 
-        for (int i = 0; i < count; ++i) {
+        for (int i = 1; i <= count; ++i) {
             int sqlType = meta.getColumnType(i);
             Column.Type type = Column.Type.fromSqlType(sqlType);
             String name = meta.getColumnName(i);
@@ -52,7 +52,7 @@ public class Verify implements Operation {
         }
 
         return result;
-    }
+    }*/
 
     List<Row> readRows(ResultSet set, List<Column> columns) throws SQLException {
         List<Row> result = new ArrayList<>();
@@ -60,7 +60,7 @@ public class Verify implements Operation {
         int count = columns.size();
         while (set.next()) {
             List<Object> values = new ArrayList<>(count);
-            for (int i = 0; i < count; ++i) {
+            for (int i = 1; i <= count; ++i) {
                 Object value = set.getObject(i);
                 values.add(value);
             }

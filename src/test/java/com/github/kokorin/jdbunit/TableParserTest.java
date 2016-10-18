@@ -1,6 +1,9 @@
 package com.github.kokorin.jdbunit;
 
-import com.github.kokorin.jdbunit.Column.Type;
+import com.github.kokorin.jdbunit.table.Column;
+import com.github.kokorin.jdbunit.table.Column.Type;
+import com.github.kokorin.jdbunit.table.Row;
+import com.github.kokorin.jdbunit.table.Table;
 import org.junit.Test;
 
 import java.sql.Time;

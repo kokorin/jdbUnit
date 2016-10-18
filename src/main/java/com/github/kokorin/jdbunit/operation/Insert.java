@@ -1,8 +1,8 @@
 package com.github.kokorin.jdbunit.operation;
 
-import com.github.kokorin.jdbunit.Column;
-import com.github.kokorin.jdbunit.Row;
-import com.github.kokorin.jdbunit.Table;
+import com.github.kokorin.jdbunit.table.Column;
+import com.github.kokorin.jdbunit.table.Row;
+import com.github.kokorin.jdbunit.table.Table;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

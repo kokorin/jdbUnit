@@ -1,4 +1,4 @@
-package com.github.kokorin.jdbunit;
+package com.github.kokorin.jdbunit.table;
 
 import java.util.ArrayList;
 import java.util.Collections;

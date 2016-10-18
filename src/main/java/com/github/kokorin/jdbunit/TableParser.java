@@ -1,5 +1,9 @@
 package com.github.kokorin.jdbunit;
 
+import com.github.kokorin.jdbunit.table.Column;
+import com.github.kokorin.jdbunit.table.Row;
+import com.github.kokorin.jdbunit.table.Table;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.sql.*;
