@@ -1,6 +1,5 @@
 package com.github.kokorin.jdbunit;
 
-
 import com.github.kokorin.jdbunit.annotation.DataSet;
 import com.github.kokorin.jdbunit.annotation.ExpectedDataSet;
 import org.junit.Test;
@@ -8,14 +7,14 @@ import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
-import javax.sql.DataSource;
 import java.io.InputStream;
+import java.sql.Connection;
 
 public class JdbUnitRule implements MethodRule {
-    private final DataSource dataSource;
+    private final Connection connection;
 
-    public JdbUnitRule(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public JdbUnitRule(Connection connection) {
+        this.connection = connection;
     }
 
     @Override
@@ -69,6 +68,6 @@ public class JdbUnitRule implements MethodRule {
             expectedDataSet = target.getClass().getResourceAsStream(expectedDataSetLocation);
         }
 
-        return new JdbUnitStatement(base, dataSet, expectedDataSet, dataSource);
+        return new JdbUnitStatement(base, connection, dataSet, expectedDataSet);
     }
 }

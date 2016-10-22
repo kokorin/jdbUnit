@@ -12,10 +12,10 @@ import static com.github.kokorin.jdbunit.JdbUnitAssert.assertTableEquals;
 
 public class Verify implements Operation {
     @Override
-    public void execute(List<Table> tables, DataSource dataSource) {
+    public void execute(List<Table> tables, Connection connection) {
         tables = combineAll(tables);
 
-        try (Connection connection = dataSource.getConnection()) {
+        try {
             for (Table expected : tables) {
                 Table actual = readTable(connection, expected);
                 assertTableEquals(expected, actual);
@@ -31,7 +31,6 @@ public class Verify implements Operation {
             String query = createSelectQuery(expected);
 
             try (ResultSet resultSet = statement.executeQuery(query)) {
-                //ResultSetMetaData meta = resultSet.getMetaData();
                 List<Column> columns = expected.getColumns();
                 List<Row> rows = readRows(resultSet, columns);
 
@@ -39,20 +38,6 @@ public class Verify implements Operation {
             }
         }
     }
-
-    /*List<Column> readColumns(ResultSetMetaData meta) throws SQLException {
-        int count = meta.getColumnCount();
-        List<Column> result = new ArrayList<>(count);
-
-        for (int i = 1; i <= count; ++i) {
-            int sqlType = meta.getColumnType(i);
-            Column.Type type = Column.Type.fromSqlType(sqlType);
-            String name = meta.getColumnName(i);
-            result.add(new Column(name, type));
-        }
-
-        return result;
-    }*/
 
     List<Row> readRows(ResultSet set, List<Column> columns) throws SQLException {
         List<Row> result = new ArrayList<>();

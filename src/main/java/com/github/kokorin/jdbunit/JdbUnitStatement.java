@@ -9,21 +9,22 @@ import org.junit.runners.model.Statement;
 
 import javax.sql.DataSource;
 import java.io.InputStream;
+import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
 
 public class JdbUnitStatement extends Statement {
     //jUnit Statement
     private final Statement base;
+    private final Connection connection;
     private final InputStream dataSet;
     private final InputStream expectedDataSet;
-    private final DataSource dataSource;
 
-    public JdbUnitStatement(Statement base, InputStream dataSet, InputStream expectedDataSet, DataSource dataSource) {
+    public JdbUnitStatement(Statement base, Connection connection, InputStream dataSet, InputStream expectedDataSet) {
         this.base = base;
+        this.connection = connection;
         this.dataSet = dataSet;
         this.expectedDataSet = expectedDataSet;
-        this.dataSource = dataSource;
     }
 
     @Override
@@ -38,10 +39,14 @@ public class JdbUnitStatement extends Statement {
             return;
         }
 
+        connection.setAutoCommit(false);
+
         List<Table> tables = TableParser.parseTables(dataSet);
         List<Operation> operations = Arrays.asList(new Delete(), new Insert());
+
         for (Operation operation : operations) {
-            operation.execute(tables, dataSource);
+            operation.execute(tables, connection);
+            connection.commit();
         }
     }
 
@@ -50,7 +55,11 @@ public class JdbUnitStatement extends Statement {
             return;
         }
 
+        connection.setAutoCommit(false);
+
         List<Table> tables = TableParser.parseTables(expectedDataSet);
-        new Verify().execute(tables, dataSource);
+        new Verify().execute(tables, connection);
+
+        connection.rollback();
     }
 }

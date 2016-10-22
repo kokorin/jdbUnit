@@ -21,8 +21,8 @@ import static org.mockito.Mockito.*;
 public class InsertTest {
     @Test(expected = NullPointerException.class)
     public void nonNullTables() throws Exception {
-        DataSource dataSource = mock(DataSource.class);
-        new Insert().execute(null, dataSource);
+        Connection connection = mock(Connection.class);
+        new Insert().execute(null, connection);
     }
 
     @Test(expected = NullPointerException.class)
@@ -37,22 +37,16 @@ public class InsertTest {
         List<Table> tables = asList(table1, table2);
 
         Insert insert = spy(new Insert());
-        DataSource dataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
 
         doNothing().when(insert).insertTable(any(Table.class), any(Connection.class));
-        when(dataSource.getConnection()).thenReturn(connection);
 
         //Actual test call
-        insert.execute(tables, dataSource);
+        insert.execute(tables, connection);
 
-        InOrder inOrder = inOrder(insert, dataSource, connection);
-        inOrder.verify(dataSource).getConnection();
-        inOrder.verify(connection).setAutoCommit(false);
+        InOrder inOrder = inOrder(insert, connection);
         inOrder.verify(insert).insertTable(table1, connection);
         inOrder.verify(insert).insertTable(table2, connection);
-        inOrder.verify(connection).commit();
-        inOrder.verify(connection).close();
         inOrder.verifyNoMoreInteractions();
     }
 

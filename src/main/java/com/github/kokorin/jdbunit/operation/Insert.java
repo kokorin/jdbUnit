@@ -4,7 +4,6 @@ import com.github.kokorin.jdbunit.table.Column;
 import com.github.kokorin.jdbunit.table.Row;
 import com.github.kokorin.jdbunit.table.Table;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -13,18 +12,14 @@ import java.util.Objects;
 
 public class Insert implements Operation {
     @Override
-    public void execute(List<Table> tables, DataSource dataSource) {
+    public void execute(List<Table> tables, Connection connection) {
         Objects.requireNonNull(tables);
-        Objects.requireNonNull(dataSource);
+        Objects.requireNonNull(connection);
 
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-
+        try {
             for (Table table : tables) {
                 insertTable(table, connection);
             }
-
-            connection.commit();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
