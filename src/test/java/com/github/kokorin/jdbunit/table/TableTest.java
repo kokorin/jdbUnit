@@ -1,8 +1,5 @@
 package com.github.kokorin.jdbunit.table;
 
-import com.github.kokorin.jdbunit.table.Column;
-import com.github.kokorin.jdbunit.table.Row;
-import com.github.kokorin.jdbunit.table.Table;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -15,8 +12,8 @@ import static org.junit.Assert.assertNotNull;
 
 public class TableTest {
     private static List<Column> twoColumns = asList(
-            new Column("name1", Column.Type.INTEGER),
-            new Column("name2", Column.Type.TIMESTAMP)
+            new Column("name1", StandardType.INTEGER),
+            new Column("name2", StandardType.TIMESTAMP)
     );;
     private static List<Row> noRows = emptyList();
 

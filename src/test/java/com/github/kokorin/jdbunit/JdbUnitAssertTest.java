@@ -2,6 +2,7 @@ package com.github.kokorin.jdbunit;
 
 import com.github.kokorin.jdbunit.table.Column;
 import com.github.kokorin.jdbunit.table.Row;
+import com.github.kokorin.jdbunit.table.StandardType;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -13,13 +14,13 @@ public class JdbUnitAssertTest {
     @Test
     public void assertColumnsEqualPass() throws Exception {
         List<Column> expected = asList(
-                new Column("first", Column.Type.INTEGER),
-                new Column("second", Column.Type.BOOLEAN)
+                new Column("first", StandardType.INTEGER),
+                new Column("second", StandardType.BOOLEAN)
         );
 
         List<Column> actual = asList(
-                new Column("first", Column.Type.INTEGER),
-                new Column("second", Column.Type.BOOLEAN)
+                new Column("first", StandardType.INTEGER),
+                new Column("second", StandardType.BOOLEAN)
         );
 
         JdbUnitAssert.assertColumnsEqual(expected, actual);
@@ -28,12 +29,12 @@ public class JdbUnitAssertTest {
     @Test(expected = AssertionError.class)
     public void assertColumnsEqualFail1() throws Exception {
         List<Column> expected = asList(
-                new Column("first", Column.Type.INTEGER)
+                new Column("first", StandardType.INTEGER)
         );
 
         List<Column> actual = asList(
-                new Column("first", Column.Type.INTEGER),
-                new Column("unexpectedColumn", Column.Type.BOOLEAN)
+                new Column("first", StandardType.INTEGER),
+                new Column("unexpectedColumn", StandardType.BOOLEAN)
         );
 
         JdbUnitAssert.assertColumnsEqual(expected, actual);
@@ -42,13 +43,13 @@ public class JdbUnitAssertTest {
     @Test(expected = AssertionError.class)
     public void assertColumnsEqualFail2() throws Exception {
         List<Column> expected = asList(
-                new Column("first", Column.Type.INTEGER),
-                new Column("second", Column.Type.BOOLEAN)
+                new Column("first", StandardType.INTEGER),
+                new Column("second", StandardType.BOOLEAN)
         );
 
         List<Column> actual = asList(
-                new Column("first", Column.Type.INTEGER),
-                new Column("second", Column.Type.DOUBLE)
+                new Column("first", StandardType.INTEGER),
+                new Column("second", StandardType.DOUBLE)
         );
 
         JdbUnitAssert.assertColumnsEqual(expected, actual);

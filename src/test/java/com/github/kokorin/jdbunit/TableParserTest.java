@@ -1,9 +1,6 @@
 package com.github.kokorin.jdbunit;
 
-import com.github.kokorin.jdbunit.table.Column;
-import com.github.kokorin.jdbunit.table.Column.Type;
-import com.github.kokorin.jdbunit.table.Row;
-import com.github.kokorin.jdbunit.table.Table;
+import com.github.kokorin.jdbunit.table.*;
 import org.junit.Test;
 
 import java.sql.Time;
@@ -44,7 +41,7 @@ public class TableParserTest {
     @Test
     public void defaultColumnType() throws Exception {
         assertReflectionEquals(
-                new Column("any", Type.STRING),
+                new Column("any", StandardType.STRING),
                 TableParser.parseColumn("any")
         );
 
@@ -53,34 +50,26 @@ public class TableParserTest {
     @Test
     public void parseHeader() throws Exception {
         assertReflectionEquals(
-                asList(new Column("column1", Type.STRING), new Column("column2", Type.LONG)),
+                asList(new Column("column1", StandardType.STRING), new Column("column2", StandardType.LONG)),
                 TableParser.parseHeader(" column1 | column2:long ")
         );
     }
 
     @Test
     public void parseColumn() throws Exception {
-        assertReflectionEquals(new Column("name", Type.INTEGER), TableParser.parseColumn("name:int"));
-        assertReflectionEquals(new Column("name", Type.STRING), TableParser.parseColumn("name:STRING"));
-        assertReflectionEquals(new Column("name", Type.LONG), TableParser.parseColumn(" name:Long "));
-        assertReflectionEquals(new Column("name", Type.DATE), TableParser.parseColumn(" name : Date "));
-    }
-
-    @Test
-    public void parseColumnType() throws Exception {
-        assertEquals(Type.BOOLEAN, TableParser.parseColumnType("Boolean"));
-        assertEquals(Type.INTEGER, TableParser.parseColumnType("int"));
-        assertEquals(Type.STRING, TableParser.parseColumnType("string"));
-        assertEquals(Type.LONG, TableParser.parseColumnType("Long"));
+        assertReflectionEquals(new Column("name", StandardType.INTEGER), TableParser.parseColumn("name:int"));
+        assertReflectionEquals(new Column("name", StandardType.STRING), TableParser.parseColumn("name:varchar"));
+        assertReflectionEquals(new Column("name", StandardType.LONG), TableParser.parseColumn(" name:Long "));
+        assertReflectionEquals(new Column("name", StandardType.DATE), TableParser.parseColumn(" name : Date "));
     }
 
     @Test
     public void parseRow() throws Exception {
         List<Column> columns = asList(
-                new Column("c1", Type.INTEGER),
-                new Column("c2", Type.STRING),
-                new Column("c3", Type.LONG),
-                new Column("c4", Type.BOOLEAN)
+                new Column("c1", StandardType.INTEGER),
+                new Column("c2", StandardType.STRING),
+                new Column("c3", StandardType.LONG),
+                new Column("c4", StandardType.BOOLEAN)
         );
 
         Row expected = new Row(Arrays.<Object>asList(234, "some", 256L, false));
@@ -90,21 +79,21 @@ public class TableParserTest {
     @Test
     public void parseValue() throws Exception {
         Object[][] data = {
-                {"text", Type.STRING, "text"},
-                {"", Type.STRING, null},
-                {"123", Type.INTEGER, 123},
-                {"", Type.INTEGER, null},
-                {"321", Type.LONG, 321L},
-                {"true", Type.BOOLEAN, true},
-                {"", Type.BOOLEAN, null},
-                {"3.1415", Type.FLOAT, 3.1415f},
-                {"3.1415926", Type.DOUBLE, 3.1415926},
-                {"1986-12-24", Type.DATE, new Date(86, 11, 24)},
-                {"15:38:07", Type.TIME, new Time(15, 38, 7)},
-                {"1986-12-24 15:38:07.042", Type.TIMESTAMP, new Timestamp(86, 11, 24, 15, 38, 7, 42_000_000)}
+                {"text", StandardType.STRING, "text"},
+                {"", StandardType.STRING, null},
+                {"123", StandardType.INTEGER, 123},
+                {"", StandardType.INTEGER, null},
+                {"321", StandardType.LONG, 321L},
+                {"true", StandardType.BOOLEAN, true},
+                {"", StandardType.BOOLEAN, null},
+                {"3.1415", StandardType.FLOAT, 3.1415f},
+                {"3.1415926", StandardType.DOUBLE, 3.1415926},
+                {"1986-12-24", StandardType.DATE, new Date(86, 11, 24)},
+                {"15:38:07", StandardType.TIME, new Time(15, 38, 7)},
+                {"1986-12-24 15:38:07.042", StandardType.TIMESTAMP, new Timestamp(86, 11, 24, 15, 38, 7, 42_000_000)}
         };
 
-        Set<Type> notCheckedTypes = new HashSet<>(asList(Type.values()));
+        Set<? extends Type> notCheckedTypes = new HashSet<>(asList(StandardType.values()));
         for (Object[] test : data) {
             String text = (String) test[0];
             Type type = (Type) test[1];
@@ -153,8 +142,8 @@ public class TableParserTest {
     @Test
     public void parseTable() throws Exception {
         List<Column> expectedColumns = asList(
-                new Column("col1", Type.INTEGER),
-                new Column("col2", Type.STRING)
+                new Column("col1", StandardType.INTEGER),
+                new Column("col2", StandardType.STRING)
         );
         List<Row> expectedRows = asList(new Row(Arrays.<Object>asList(123, "val12")), new Row(Arrays.<Object>asList(321, "val22")));
         List<String> lines = asList(

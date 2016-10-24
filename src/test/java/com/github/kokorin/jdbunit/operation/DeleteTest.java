@@ -2,11 +2,11 @@ package com.github.kokorin.jdbunit.operation;
 
 import com.github.kokorin.jdbunit.table.Column;
 import com.github.kokorin.jdbunit.table.Row;
+import com.github.kokorin.jdbunit.table.StandardType;
 import com.github.kokorin.jdbunit.table.Table;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Collections;
@@ -31,9 +31,9 @@ public class DeleteTest {
     @Test
     public void execute() throws Exception {
         List<Table> tables = asList(
-                new Table("First", singletonList(new Column("id", Column.Type.LONG)), Collections.<Row>emptyList()),
-                new Table("Second", singletonList(new Column("any", Column.Type.STRING)), Collections.<Row>emptyList()),
-                new Table("Third", singletonList(new Column("some", Column.Type.DATE)), Collections.<Row>emptyList())
+                new Table("First", singletonList(new Column("id", StandardType.LONG)), Collections.<Row>emptyList()),
+                new Table("Second", singletonList(new Column("any", StandardType.STRING)), Collections.<Row>emptyList()),
+                new Table("Third", singletonList(new Column("some", StandardType.DATE)), Collections.<Row>emptyList())
         );
 
         Connection connection = mock(Connection.class);

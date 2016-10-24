@@ -1,8 +1,6 @@
 package com.github.kokorin.jdbunit;
 
-import com.github.kokorin.jdbunit.table.Column;
-import com.github.kokorin.jdbunit.table.Row;
-import com.github.kokorin.jdbunit.table.Table;
+import com.github.kokorin.jdbunit.table.*;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -122,27 +120,12 @@ public class TableParser {
         }
 
         String name = splits[0].trim();
-        Column.Type type = Column.Type.STRING;
+        Type type = StandardType.STRING;
         if (splits.length > 1) {
-            type = parseColumnType(splits[1].trim());
+            type = TypeRegistry.getType(splits[1].trim());
         }
 
         return new Column(name, type);
-    }
-
-    static Column.Type parseColumnType(String value) {
-        for (Column.Type type : Column.Type.values()) {
-            if (type.name().equals(value)) {
-                return type;
-            }
-            for (String alias : type.getAliases()) {
-                if (alias.equals(value)) {
-                    return type;
-                }
-            }
-        }
-
-        throw new IllegalArgumentException("Nor column type neither alias: " + value);
     }
 
     static Row parseRow(String line, List<Column> columns) {
@@ -155,7 +138,7 @@ public class TableParser {
 
         for (int i = 0; i < columns.size(); ++i) {
             String cell = cells.get(i);
-            Column.Type type = columns.get(i).getType();
+            Type type = columns.get(i).getType();
 
             Object value = parseValue(cell, type);
             values.add(value);
@@ -164,7 +147,7 @@ public class TableParser {
         return new Row(values);
     }
 
-    static Object parseValue(String text, Column.Type type) {
+    static Object parseValue(String text, Type type) {
         Objects.requireNonNull(text);
         text = text.trim();
 
@@ -172,28 +155,28 @@ public class TableParser {
             return null;
         }
 
-        if (type == Column.Type.INTEGER) {
+        if (type == StandardType.INTEGER) {
             return Integer.valueOf(text);
         }
-        if (type == Column.Type.LONG) {
+        if (type == StandardType.LONG) {
             return Long.valueOf(text);
         }
-        if (type == Column.Type.BOOLEAN) {
+        if (type == StandardType.BOOLEAN) {
             return Boolean.valueOf(text);
         }
-        if (type == Column.Type.FLOAT) {
+        if (type == StandardType.FLOAT) {
             return Float.valueOf(text);
         }
-        if (type == Column.Type.DOUBLE) {
+        if (type == StandardType.DOUBLE) {
             return Double.valueOf(text);
         }
-        if (type == Column.Type.DATE) {
+        if (type == StandardType.DATE) {
             return Date.valueOf(text);
         }
-        if (type == Column.Type.TIME) {
+        if (type == StandardType.TIME) {
             return Time.valueOf(text);
         }
-        if (type == Column.Type.TIMESTAMP) {
+        if (type == StandardType.TIMESTAMP) {
             return Timestamp.valueOf(text);
         }
 

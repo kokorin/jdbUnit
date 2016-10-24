@@ -2,6 +2,7 @@ package com.github.kokorin.jdbunit.operation;
 
 import com.github.kokorin.jdbunit.table.Column;
 import com.github.kokorin.jdbunit.table.Row;
+import com.github.kokorin.jdbunit.table.StandardType;
 import com.github.kokorin.jdbunit.table.Table;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -53,8 +54,8 @@ public class InsertTest {
     @Test
     public void insertTable() throws Exception {
         List<Column> columns = asList(
-                new Column("id", Column.Type.LONG),
-                new Column("name", Column.Type.STRING)
+                new Column("id", StandardType.LONG),
+                new Column("name", StandardType.STRING)
         );
         Row row1 = new Row(Arrays.<Object>asList(123L, "Test"));
         Row row2 = new Row(Arrays.<Object>asList(321L, "Mock"));
@@ -88,9 +89,9 @@ public class InsertTest {
         PreparedStatement statement = mock(PreparedStatement.class);
 
         List<Column> columns = asList(
-                new Column("id", Column.Type.LONG),
-                new Column("name", Column.Type.STRING),
-                new Column("password", Column.Type.STRING)
+                new Column("id", StandardType.LONG),
+                new Column("name", StandardType.STRING),
+                new Column("password", StandardType.STRING)
         );
         Row row = new Row(Arrays.<Object>asList(123L, "Name", "Password"));
 
@@ -108,9 +109,9 @@ public class InsertTest {
         Table table = new Table(
                 "First",
                 asList(
-                        new Column("id", Column.Type.LONG),
-                        new Column("username", Column.Type.STRING),
-                        new Column("birth", Column.Type.DATE)
+                        new Column("id", StandardType.LONG),
+                        new Column("username", StandardType.STRING),
+                        new Column("birth", StandardType.DATE)
                 ),
                 Collections.<Row>emptyList()
         );

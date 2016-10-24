@@ -3,6 +3,7 @@ package com.github.kokorin.jdbunit.operation;
 import com.github.kokorin.jdbunit.table.Column;
 import com.github.kokorin.jdbunit.table.Row;
 import com.github.kokorin.jdbunit.table.Table;
+import com.github.kokorin.jdbunit.table.Type;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,8 +43,8 @@ public class Insert implements Operation {
         List<Object> values = row.getValues();
         for (int i = 0; i < values.size(); ++i) {
             Object value = values.get(i);
-            Column.Type type = columns.get(i).getType();
-            statement.setObject(i + 1, value, type.getSqlType());
+            Type type = columns.get(i).getType();
+            type.setParameter(statement, i + 1, value);
         }
     }
 

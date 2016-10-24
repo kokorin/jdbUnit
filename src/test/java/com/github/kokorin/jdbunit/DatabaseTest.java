@@ -30,8 +30,8 @@ public class DatabaseTest {
             assertEquals(true, set.getBoolean("tBoolean"));
             assertEquals(42, set.getInt("tInt"));
             assertEquals(123, set.getLong("tLong"));
-            assertEquals(3.14159f, set.getFloat("tFloat"), 0.000001f);
-            assertEquals(2.71, set.getDouble("tDouble"), 0.001);
+            assertEquals(3.14159f, set.getFloat("tFloat"), 0.0000001f);
+            assertEquals(2.71, set.getDouble("tDouble"), 0.00001);
             assertEquals(new Date(148, 11, 31), set.getDate("tDate"));
             assertEquals(new Time(12, 6, 58), set.getTime("tTime"));
             assertEquals(new Timestamp(148, 11, 31, 12, 6, 58, 0), set.getTimestamp("tTimestamp"));

@@ -2,13 +2,13 @@ package com.github.kokorin.jdbunit;
 
 import com.github.kokorin.jdbunit.annotation.DataSet;
 import com.github.kokorin.jdbunit.annotation.ExpectedDataSet;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @DataSet("Before.md")
 public class HyperSqlIT {

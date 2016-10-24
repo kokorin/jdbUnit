@@ -3,6 +3,7 @@ package com.github.kokorin.jdbunit.operation;
 import com.github.kokorin.jdbunit.table.Column;
 import com.github.kokorin.jdbunit.table.Row;
 import com.github.kokorin.jdbunit.table.Table;
+import com.github.kokorin.jdbunit.table.Type;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -45,8 +46,9 @@ public class Verify implements Operation {
         int count = columns.size();
         while (set.next()) {
             List<Object> values = new ArrayList<>(count);
-            for (int i = 1; i <= count; ++i) {
-                Object value = set.getObject(i);
+            for (int i = 0; i < count; ++i) {
+                Type type = columns.get(i).getType();
+                Object value = type.getValue(set, i + 1);
                 values.add(value);
             }
             result.add(new Row(values));

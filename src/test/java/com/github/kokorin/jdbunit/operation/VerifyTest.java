@@ -3,6 +3,7 @@ package com.github.kokorin.jdbunit.operation;
 import com.github.kokorin.jdbunit.table.Column;
 import com.github.kokorin.jdbunit.JdbUnitAssert;
 import com.github.kokorin.jdbunit.table.Row;
+import com.github.kokorin.jdbunit.table.StandardType;
 import com.github.kokorin.jdbunit.table.Table;
 import org.junit.Test;
 
@@ -20,9 +21,9 @@ public class VerifyTest {
         Table users1 = new Table(
                 "User",
                 asList(
-                        new Column("id", Column.Type.INTEGER),
-                        new Column("name", Column.Type.STRING),
-                        new Column("active", Column.Type.BOOLEAN)
+                        new Column("id", StandardType.INTEGER),
+                        new Column("name", StandardType.STRING),
+                        new Column("active", StandardType.BOOLEAN)
                 ),
                 asList(
                         new Row(Arrays.<Object>asList(
@@ -37,9 +38,9 @@ public class VerifyTest {
         Table users2 = new Table(
                 "User",
                 asList(
-                        new Column("login", Column.Type.STRING),
-                        new Column("name", Column.Type.STRING),
-                        new Column("password", Column.Type.STRING)
+                        new Column("login", StandardType.STRING),
+                        new Column("name", StandardType.STRING),
+                        new Column("password", StandardType.STRING)
                 ),
                 asList(
                         new Row(Arrays.<Object>asList(
@@ -54,7 +55,7 @@ public class VerifyTest {
         Table other = new Table(
                 "Other",
                 singletonList(
-                        new Column("id", Column.Type.LONG)
+                        new Column("id", StandardType.LONG)
                 ),
                 Collections.<Row>emptyList()
         );
@@ -62,11 +63,11 @@ public class VerifyTest {
         Table expectedUsers = new Table(
                 "User",
                 asList(
-                        new Column("id", Column.Type.INTEGER),
-                        new Column("name", Column.Type.STRING),
-                        new Column("active", Column.Type.BOOLEAN),
-                        new Column("login", Column.Type.STRING),
-                        new Column("password", Column.Type.STRING)
+                        new Column("id", StandardType.INTEGER),
+                        new Column("name", StandardType.STRING),
+                        new Column("active", StandardType.BOOLEAN),
+                        new Column("login", StandardType.STRING),
+                        new Column("password", StandardType.STRING)
                 ),
                 asList(
                         new Row(asList(
@@ -105,9 +106,9 @@ public class VerifyTest {
         Table table = new Table(
                 "TableName",
                 asList(
-                        new Column("id", Column.Type.INTEGER),
-                        new Column("name", Column.Type.STRING),
-                        new Column("birth", Column.Type.DATE)
+                        new Column("id", StandardType.INTEGER),
+                        new Column("name", StandardType.STRING),
+                        new Column("birth", StandardType.DATE)
                 ),
                 Collections.<Row>emptyList()
         );
