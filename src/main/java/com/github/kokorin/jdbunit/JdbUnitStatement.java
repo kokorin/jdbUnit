@@ -7,7 +7,6 @@ import com.github.kokorin.jdbunit.operation.Verify;
 import com.github.kokorin.jdbunit.table.Table;
 import org.junit.runners.model.Statement;
 
-import javax.sql.DataSource;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.util.Arrays;

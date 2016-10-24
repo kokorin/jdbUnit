@@ -7,7 +7,6 @@ import com.github.kokorin.jdbunit.table.Table;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Types;

@@ -4,8 +4,9 @@ import com.github.kokorin.jdbunit.table.*;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.sql.*;
 import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.*;
 
 public class TableParser {

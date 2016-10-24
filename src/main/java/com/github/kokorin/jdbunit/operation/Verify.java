@@ -5,8 +5,10 @@ import com.github.kokorin.jdbunit.table.Row;
 import com.github.kokorin.jdbunit.table.Table;
 import com.github.kokorin.jdbunit.table.Type;
 
-import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 import static com.github.kokorin.jdbunit.JdbUnitAssert.assertTableEquals;

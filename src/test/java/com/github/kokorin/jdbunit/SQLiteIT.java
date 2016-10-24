@@ -11,16 +11,16 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 @DataSet("Before.md")
-public class HyperSqlIT {
+public class SQLiteIT {
     private static Connection connection;
     @Rule
     public final JdbUnitRule rule = new JdbUnitRule(connection);
 
     @BeforeClass
     public static void setUp() throws Exception {
-        connection = DriverManager.getConnection("jdbc:hsqldb:mem:test", "SA", "");
+        connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         connection.setAutoCommit(false);
-        DatabaseTest.createTable(HyperSqlIT.class, connection);
+        DatabaseTest.createTable(SQLiteIT.class, connection);
         connection.commit();
     }
 

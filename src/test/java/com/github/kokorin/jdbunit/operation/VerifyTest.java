@@ -1,7 +1,7 @@
 package com.github.kokorin.jdbunit.operation;
 
-import com.github.kokorin.jdbunit.table.Column;
 import com.github.kokorin.jdbunit.JdbUnitAssert;
+import com.github.kokorin.jdbunit.table.Column;
 import com.github.kokorin.jdbunit.table.Row;
 import com.github.kokorin.jdbunit.table.StandardType;
 import com.github.kokorin.jdbunit.table.Table;
