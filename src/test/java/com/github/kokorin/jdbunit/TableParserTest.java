@@ -140,7 +140,7 @@ public class TableParserTest {
     }
 
     @Test
-    public void parseTable() throws Exception {
+    public void parseFilledTable() throws Exception {
         List<Column> expectedColumns = asList(
                 new Column("col1", StandardType.INTEGER),
                 new Column("col2", StandardType.STRING)
@@ -150,7 +150,7 @@ public class TableParserTest {
                 "                          ",
                 " name                     ",
                 "==========================",
-                "| col1:int | col2:string |",
+                "|  col1:int  | col2:string|",
                 "|------------|------------|",
                 "|     123    |    val12   |",
                 "|     321    |    val22   |"
@@ -159,6 +159,33 @@ public class TableParserTest {
         assertReflectionEquals(
                 new Table("name", expectedColumns, expectedRows),
                 TableParser.parseTable(lines.iterator())
+        );
+
+    }
+
+    @Test
+    public void parseEmptyTable() throws Exception {
+        List<Column> expectedColumns = Collections.emptyList();
+        List<Row> expectedRows = Collections.emptyList();
+        List<String> lines1 = asList(
+                "                          ",
+                " name                     ",
+                "=========================="
+        );
+        List<String> lines2 = asList(
+                "                          ",
+                " name                     ",
+                "==========================",
+                " "
+        );
+
+        assertReflectionEquals(
+                new Table("name", expectedColumns, expectedRows),
+                TableParser.parseTable(lines1.iterator())
+        );
+        assertReflectionEquals(
+                new Table("name", expectedColumns, expectedRows),
+                TableParser.parseTable(lines2.iterator())
         );
 
     }

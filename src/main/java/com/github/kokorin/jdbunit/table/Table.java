@@ -18,8 +18,8 @@ public class Table {
         if (name.isEmpty()) {
             throw new IllegalArgumentException("Table name must be non empty");
         }
-        if (columns.isEmpty()) {
-            throw new IllegalArgumentException("At least one column is required");
+        if (columns.isEmpty() && !rows.isEmpty()) {
+            throw new IllegalArgumentException("At least one column is required for non-empty table");
         }
 
         for (Row row : rows) {

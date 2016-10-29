@@ -29,8 +29,8 @@ public class TableParser {
 
     static Table parseTable(Iterator<String> lines) {
         String name = null;
-        List<Column> columns = null;
-        List<Row> rows;
+        List<Column> columns = Collections.emptyList();
+        List<Row> rows = Collections.emptyList();
 
         //Rewinding empty lines until we will find table's name
         while (lines.hasNext()) {
@@ -46,6 +46,7 @@ public class TableParser {
             throw new IllegalArgumentException();
         }
 
+        //If name is NULL, it means we haven't found any table
         if (name == null) {
             return null;
         }
@@ -55,22 +56,27 @@ public class TableParser {
             throw new IllegalArgumentException();
         }
 
-        String header = lines.next();
-        columns = parseHeader(header);
+        //Empty table can end here
+        if (lines.hasNext()) {
+            String header = lines.next();
+            if (header != null && !header.trim().isEmpty()) {
+                columns = parseHeader(header);
 
-        String contentSeparator = lines.next();
-        if (!isContentSeparator(contentSeparator, columns.size())) {
-            throw new IllegalArgumentException();
-        }
+                String contentSeparator = lines.next();
+                if (!isContentSeparator(contentSeparator, columns.size())) {
+                    throw new IllegalArgumentException();
+                }
 
-        rows = new ArrayList<>();
-        while (lines.hasNext()) {
-            String line = lines.next();
-            if (line.trim().isEmpty()) {
-                break;
+                rows = new ArrayList<>();
+                while (lines.hasNext()) {
+                    String line = lines.next();
+                    if (line == null || line.trim().isEmpty()) {
+                        break;
+                    }
+                    Row row = parseRow(line, columns);
+                    rows.add(row);
+                }
             }
-            Row row = parseRow(line, columns);
-            rows.add(row);
         }
 
         return new Table(name, columns, rows);
