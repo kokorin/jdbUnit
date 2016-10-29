@@ -1,6 +1,8 @@
 /target
 /.idea
 
+/derby.log
+
 *.class
 *.jar
 *.war
