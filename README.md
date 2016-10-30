@@ -8,6 +8,16 @@ Simple library for database integration testing. It is as simple as [dbUnit](htt
  if [standard ones](https://github.com/kokorin/jdbUnit/blob/master/src/main/java/com/github/kokorin/jdbunit/table/StandardType.java) aren't sufficient
 * is simple, so you won't spend hours in debugging your tests
 
+jdbUnit can be plugged-in via maven:
+```xml
+<dependency>
+    <groupId>com.github.kokorin.jdbunit</groupId>
+    <artifactId>jdbunit</artifactId>
+    <version>1.0</version>
+    <scope>test</scope>
+</dependency>
+```
+
 #Usage
 
 ##Table declaration
