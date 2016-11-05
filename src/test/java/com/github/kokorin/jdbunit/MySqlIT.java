@@ -40,4 +40,12 @@ public class MySqlIT {
     public void respectsExpected() throws Exception {
         DatabaseTest.respectsExpected(connection);
     }
+
+    @Test
+    @DataSet("BeforeWithVars.md")
+    @ExpectedDataSet("AfterWithVars.md")
+    public void capturesVariables() throws Exception {
+        DatabaseTest.capturesVariables(connection);
+    }
+
 }

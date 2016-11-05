@@ -28,4 +28,38 @@ public class Row {
     public List<Object> getValues() {
         return values;
     }
+
+    public static class ValueCaptor {
+        private final String name;
+
+        public ValueCaptor(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public String toString() {
+            return "Cap:" + name + ":";
+        }
+    }
+
+    public static class ValueReference {
+        private final String name;
+
+        public ValueReference(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public String toString() {
+            return "Ref=" + name + "=";
+        }
+    }
 }

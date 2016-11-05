@@ -15,14 +15,17 @@ import static com.github.kokorin.jdbunit.JdbUnitAssert.assertTableEquals;
 
 public class Verify implements Operation {
     @Override
-    public void execute(List<Table> tables, Connection connection) {
-        tables = combineAll(tables);
+    public void execute(List<Table> expectedTables, Connection connection) {
+        expectedTables = combineAll(expectedTables);
 
         try {
-            for (Table expected : tables) {
+            List<Table> actualTables = new ArrayList<>(expectedTables.size());
+            for (Table expected : expectedTables) {
                 Table actual = readTable(connection, expected);
-                assertTableEquals(expected, actual);
+                actualTables.add(actual);
             }
+
+            assertTableEquals(expectedTables, actualTables);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -2,6 +2,7 @@
 
 jdbUnit is a library for database integration testing. It is as simple as [dbUnit](http://dbunit.sourceforge.net/)
  with [unitils-dbunit](http://www.unitils.org/tutorial-database.html), but it:
+* supports validation of foreign references in expected data
 * is implemented with pure JDBC, no special database handler is required
 * loads data from [markdown tables](http://fletcher.github.io/MultiMarkdown-5/tables.html)
 * allows to add [custom type](https://github.com/kokorin/jdbUnit/blob/master/src/main/java/com/github/kokorin/jdbunit/table/Type.java)
@@ -48,7 +49,7 @@ Tablename
 | tLong:Long | tFloat:Float | tDouble:Double | tDate:Date |
 |:----------:|:------------:|:--------------:|:----------:|
 |    123     |   3.14159    |   2.71         | 2008-12-31 |
-|    321     |    12.85     |   451.1        | 2018-11-3  |
+|    321     |    12.85     |   451.1        | 2018-11-30  |
 ```
 
 It's possible to specify empty table:
@@ -57,7 +58,7 @@ Tablename
 ==========
 ```
 
-##Testing
+##Data sets
 
 Testing is done with special jUnit4 Rule (`JdbUnitRule`) and two annotations (`@DataSet` and `@ExpectedDataSet`).
 Annotations work the same as in [unitils-dbunit](http://www.unitils.org/tutorial-database.html#Loading_test_data_sets):
@@ -69,7 +70,61 @@ Annotations work the same as in [unitils-dbunit](http://www.unitils.org/tutorial
  * Method-level `@DataSet` defaults to ClassName.methodName.md
  * `@ExpectedDataSet` defaults to ClassName.methodName.result.md
 
-Here is short example
+##Handling references
+
+jdbUnit allows to check that a reference from one new record (SUser_SRole)  was correctly set to another new record (SUser or SRole).
+For that you have to specify value Captor in the form of `:name:` and value Reference in the form of `=name=`.
+
+Here is an example of reference usage:
+
+Before.md
+```
+SUser
+===============================================
+| id:Integer | login:String | password:String |
+|:----------:|:------------:|:---------------:|
+|     1      |   admin      |      admin      |
+
+SRole
+============================
+| id:Integer | name:String |
+|:----------:|:-----------:|
+|     1      | ROLE_ADMIN  |
+
+SUser_SRole
+=====================================
+| user_id:Integer | role_id:Integer |
+|:---------------:|:---------------:|
+|        1        |       1         |
+```
+
+Expected.md
+```
+SUser
+===============================================
+| id:Integer | login:String | password:String |
+|:----------:|:------------:|:---------------:|
+|     1      |   admin      |      admin      |
+|    :X:     |    test      |       test      |
+
+SRole
+============================
+| id:Integer | name:String |
+|:----------:|:-----------:|
+|     1      | ROLE_ADMIN  |
+|    :Z:     | ROLE_TEST   |
+
+SUser_SRole
+=====================================
+| user_id:Integer | role_id:Integer |
+|:---------------:|:---------------:|
+|        1        |       1         |
+|       =X=       |      =Z=        |
+```
+ 
+##Test example
+
+Here is an example of UserDao test class:
 ```java
 @DataSet("Before.md")
 public class UserDaoIT {

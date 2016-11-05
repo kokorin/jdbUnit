@@ -4,23 +4,30 @@ import com.github.kokorin.jdbunit.table.Column;
 import com.github.kokorin.jdbunit.table.Row;
 import com.github.kokorin.jdbunit.table.Table;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
 public class JdbUnitAssert {
     private JdbUnitAssert() {}
 
-    public static void assertTableEquals(Table expected, Table actual) {
-        assertNotNull("No expected table", expected);
-        assertNotNull("No actual table", actual);
-        assertEquals("Table names must be equal", expected.getName(), actual.getName());
+    public static void assertTableEquals(List<Table> expectedTables, List<Table> actualTables) {
+        assertNotNull("No expected table", expectedTables);
+        assertNotNull("No actual table", actualTables);
+        assertEquals(expectedTables.size(), actualTables.size());
 
-        assertColumnsEqual(expected.getColumns(), actual.getColumns());
-        assertContentsEqual(expected.getRows(), actual.getRows());
+        Map<String, Table> actualMap = new HashMap<>();
+        for (Table actual : actualTables) {
+            actualMap.put(actual.getName(), actual);
+        }
+
+        Map<String, Object> variables = new HashMap<>();
+        for (Table expected : expectedTables) {
+            Table actual = actualMap.get(expected.getName());
+            assertNotNull("No table among actual: " + expected.getName(), actual);
+            assertColumnsEqual(expected.getColumns(), actual.getColumns());
+            assertContentsEqual(expected.getRows(), actual.getRows(), variables);
+        }
     }
 
     public static void assertColumnsEqual(List<Column> expected, List<Column> actual) {
@@ -34,7 +41,7 @@ public class JdbUnitAssert {
         }
     }
 
-    public static void assertContentsEqual(List<Row> expected, List<Row> actual) {
+    public static void assertContentsEqual(List<Row> expected, List<Row> actual, Map<String, Object> variables) {
         List<Row> notFound = new ArrayList<>(expected);
         List<Row> notExpected = new ArrayList<>(actual);
 
@@ -45,11 +52,27 @@ public class JdbUnitAssert {
                 Row actRow = actRowIt.next();
 
                 boolean equal = true;
+                Map<String, Object> captures = new HashMap<>();
                 for (int i = 0; i < expRow.getValues().size(); ++i) {
                     Object expValue = expRow.getValues().get(i);
                     Object actValue = actRow.getValues().get(i);
 
-                    if (!equalsRegardingAny(expValue, actValue)) {
+                    if (expValue instanceof Row.ValueCaptor) {
+                        Row.ValueCaptor captor = (Row.ValueCaptor) expValue;
+                        captures.put(captor.getName(), actValue);
+                        continue;
+                    }
+
+                    if (expValue == Row.ANY_VALUE) {
+                        continue;
+                    }
+
+                    if (expValue instanceof Row.ValueReference) {
+                        Row.ValueReference reference = (Row.ValueReference) expValue;
+                        expValue = variables.get(reference.getName());
+                    }
+
+                    if (!Objects.equals(expValue, actValue)) {
                         equal = false;
                         break;
                     }
@@ -58,6 +81,7 @@ public class JdbUnitAssert {
                 if (equal) {
                     actRowIt.remove();
                     expRowIt.remove();
+                    variables.putAll(captures);
                     break;
                 }
             }
@@ -78,13 +102,6 @@ public class JdbUnitAssert {
 
             fail(message.toString());
         }
-    }
-
-    public static boolean equalsRegardingAny(Object expected, Object actual) {
-        if (expected == Row.ANY_VALUE) {
-            return true;
-        }
-        return Objects.equals(expected, actual);
     }
 
     public static void printRows(StringBuilder result, List<Row> rows) {

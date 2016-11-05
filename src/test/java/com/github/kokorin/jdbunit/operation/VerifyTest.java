@@ -86,19 +86,12 @@ public class VerifyTest {
         );
 
         Table actualUsers = Verify.combine(users1, users2);
-        JdbUnitAssert.assertTableEquals(expectedUsers, actualUsers);
+        JdbUnitAssert.assertTableEquals(asList(expectedUsers), asList(actualUsers));
 
         List<Table> tables = asList(users1, other, users2);
         List<Table> expectedAll = asList(expectedUsers, other);
         List<Table> actualAll = Verify.combineAll(tables);
-
-        assertEquals(expectedAll.size(), actualAll.size());
-        for (int i = 0; i < expectedAll.size(); ++i) {
-            Table expTable = expectedAll.get(i);
-            Table actTable = actualAll.get(i);
-
-            JdbUnitAssert.assertTableEquals(expTable, actTable);
-        }
+        JdbUnitAssert.assertTableEquals(expectedAll, actualAll);
     }
 
     @Test

@@ -39,4 +39,11 @@ public class H2IT {
     public void respectsExpected() throws Exception {
         DatabaseTest.respectsExpected(connection);
     }
+
+    @Test
+    @DataSet("BeforeWithVars.md")
+    @ExpectedDataSet("AfterWithVars.md")
+    public void capturesVariables() throws Exception {
+        DatabaseTest.capturesVariables(connection);
+    }
 }

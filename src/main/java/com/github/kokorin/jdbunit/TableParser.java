@@ -162,32 +162,17 @@ public class TableParser {
             return null;
         }
 
-        if (type == StandardType.INTEGER) {
-            return Integer.valueOf(text);
-        }
-        if (type == StandardType.LONG) {
-            return Long.valueOf(text);
-        }
-        if (type == StandardType.BOOLEAN) {
-            return Boolean.valueOf(text);
-        }
-        if (type == StandardType.FLOAT) {
-            return Float.valueOf(text);
-        }
-        if (type == StandardType.DOUBLE) {
-            return Double.valueOf(text);
-        }
-        if (type == StandardType.DATE) {
-            return Date.valueOf(text);
-        }
-        if (type == StandardType.TIME) {
-            return Time.valueOf(text);
-        }
-        if (type == StandardType.TIMESTAMP) {
-            return Timestamp.valueOf(text);
+        if (text.startsWith(":") && text.endsWith(":") && text.length() > 2) {
+            String captor = text.substring(1, text.length() - 1);
+            return new Row.ValueCaptor(captor);
         }
 
-        return text;
+        if (text.startsWith("=") && text.endsWith("=") && text.length() > 2) {
+            String reference = text.substring(1, text.length() - 1);
+            return new Row.ValueReference(reference);
+        }
+
+        return type.parse(text);
     }
 
     static boolean isHeaderSeparator(String line) {
