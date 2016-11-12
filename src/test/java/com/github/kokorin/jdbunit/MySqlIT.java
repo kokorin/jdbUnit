@@ -42,6 +42,12 @@ public class MySqlIT {
     }
 
     @Test
+    @ExpectedDataSet("AfterDelete.md")
+    public void verifiesEmptyTables() throws Exception {
+        DatabaseTest.verifiesEmptyTables(connection);
+    }
+
+    @Test
     @DataSet("BeforeWithVars.md")
     @ExpectedDataSet("AfterWithVars.md")
     public void capturesVariables() throws Exception {

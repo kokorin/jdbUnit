@@ -111,4 +111,18 @@ public class VerifyTest {
 
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void createSelectQueryWithoutColumns() throws Exception {
+        Table table = new Table(
+                "TableName",
+                Collections.<Column>emptyList(),
+                Collections.<Row>emptyList()
+        );
+
+        String actual = Verify.createSelectQuery(table);
+        String expected = "SELECT * FROM TableName";
+
+        assertEquals(expected, actual);
+    }
 }

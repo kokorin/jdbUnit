@@ -64,6 +64,12 @@ public class DatabaseTest {
         }
     }
 
+    public static void verifiesEmptyTables(Connection connection) throws Exception {
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("DELETE FROM Test");
+        }
+    }
+
     public static void capturesVariables(Connection connection) throws Exception {
         Random random = new Random();
 

@@ -131,12 +131,16 @@ public class Verify implements Operation {
     static String createSelectQuery(Table expected) {
         StringBuilder result = new StringBuilder("SELECT ");
 
-        for (int i = 0; i < expected.getColumns().size(); ++i) {
-            Column column = expected.getColumns().get(i);
-            if (i != 0) {
-                result.append(", ");
+        if (!expected.getColumns().isEmpty()) {
+            for (int i = 0; i < expected.getColumns().size(); ++i) {
+                Column column = expected.getColumns().get(i);
+                if (i != 0) {
+                    result.append(", ");
+                }
+                result.append(column.getName());
             }
-            result.append(column.getName());
+        } else {
+            result.append("*");
         }
 
         result.append(" FROM ").append(expected.getName());
