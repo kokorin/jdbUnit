@@ -14,7 +14,7 @@ jdbUnit can be plugged-in via maven central repository:
 <dependency>
     <groupId>com.github.kokorin.jdbunit</groupId>
     <artifactId>jdbunit</artifactId>
-    <version>1.1</version>
+    <version>1.1.1</version>
     <scope>test</scope>
 </dependency>
 ```
